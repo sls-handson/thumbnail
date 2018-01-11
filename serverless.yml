@@ -23,7 +23,6 @@ provider:
   runtime: java8
   timeout: 90
   profile: sls-handson
-  role: 'arn:aws:iam::184619842885:role/RoleSlsHandson2017'
 
 
 # you can overwrite defaults here
@@ -31,11 +30,13 @@ provider:
   region: us-east-1
 
 # you can add statements to the Lambda function's IAM Role here
-#  iamRoleStatements:
-#    - Effect: "Allow"
-#      Action:
-#        - "s3:ListBucket"
-#      Resource: { "Fn::Join" : ["", ["arn:aws:s3:::", { "Ref" : "ServerlessDeploymentBucket" } ] ]  }
+  iamRoleStatements:
+    - Effect: "Allow"
+      Action:
+        - "s3:ListBucket"
+        - "s3:GetObject"
+        - "s3:PutObject"
+      Resource: "*"
 #    - Effect: "Allow"
 #      Action:
 #        - "s3:PutObject"

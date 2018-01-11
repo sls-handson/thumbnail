@@ -62,7 +62,12 @@ $
 ## Invoke
 ```
 $sls invoke -f thumbnail -p event.json --no a001
-true
+{
+    "thumbnail": {
+        "s3Key": "1_happy_face.jpg",
+        "s3Bucket": "a001-wildrydes-step-module-resources-thumbnails3bucket"
+    }
+}
 
 $
 ```

@@ -22,9 +22,10 @@ import com.mortennobel.imagescaling.ResampleOp;
 
 import config.Properties;
 import functions.Function.Input;
+import functions.Function.Output;
 
 
-public class Function implements java.util.function.Function<Input, Boolean> {
+public class Function implements java.util.function.Function<Input, Output> {
 
 	private final AmazonS3 s3;
 	private final Properties properties;
@@ -35,32 +36,33 @@ public class Function implements java.util.function.Function<Input, Boolean> {
 	}
 
 	@Override
-	public Boolean apply(final Input request) {
+	public Output apply(final Input request) {
 
 		System.out.println(request);
 
-		S3Object s3Object = s3.getObject(request.getS3Bucket(), request.getS3Key());
+		final S3Object s3Object = s3.getObject(request.getS3Bucket(), request.getS3Key());
+		final Thumbnail thumbnail = new Thumbnail(properties.getS3BucketPrefix() + properties.getThumbnailBucket(), request.getS3Key());
 
 		try {
-			BufferedImage source = ImageIO.read(s3Object.getObjectContent());
-			ResampleOp resampleOp = new ResampleOp(
+			final BufferedImage source = ImageIO.read(s3Object.getObjectContent());
+			final ResampleOp resampleOp = new ResampleOp(
 					DimensionConstrain.createMaxDimension(properties.getMaxWidth(), properties.getMaxHeight(), true));
 			resampleOp.setFilter(ResampleFilters.getLanczos3Filter());
 			resampleOp.setUnsharpenMask(AdvancedResizeOp.UnsharpenMask.Normal);
-			BufferedImage resized = resampleOp.filter(source, null);
-			ByteArrayOutputStream os = new ByteArrayOutputStream();
+			final BufferedImage resized = resampleOp.filter(source, null);
+			final ByteArrayOutputStream os = new ByteArrayOutputStream();
 			ImageIO.write(resized, StringUtils.getFilenameExtension(s3Object.getKey()), os);
 
-			InputStream is = new ByteArrayInputStream(os.toByteArray());
-			ObjectMetadata meta = new ObjectMetadata();
+			final InputStream is = new ByteArrayInputStream(os.toByteArray());
+			final ObjectMetadata meta = new ObjectMetadata();
 			meta.setContentLength(os.size());
 
-			s3.putObject(properties.getS3BucketPrefix() + properties.getThumbnailBucket(), s3Object.getKey(), is, meta);
+			s3.putObject(thumbnail.s3Bucket, thumbnail.s3Key, is, meta);
 		} catch (IOException e) {
 			throw new RuntimeException(e);
 		}
 
-		return Boolean.TRUE;
+		return new Output(thumbnail);
 	}
 	
 	public static final class Input {
@@ -99,5 +101,46 @@ public class Function implements java.util.function.Function<Input, Boolean> {
 			this.parallelResult = parallelResult;
 		}
 
+	}
+	
+	public static final class Output {
+		private Thumbnail thumbnail;
+
+		public Output(final Thumbnail thumbnail) {
+			this.thumbnail = thumbnail;
+		}
+
+		public Thumbnail getThumbnail() {
+			return thumbnail;
+		}
+
+		public void setThumbnail(Thumbnail thumbnail) {
+			this.thumbnail = thumbnail;
+		}
+	}
+	
+	public static class Thumbnail {
+		private String s3Key, s3Bucket;
+		
+		public Thumbnail(final String s3Bucket, final String s3Key) {
+			this.s3Bucket = s3Bucket;
+			this.s3Key = s3Key;
+		}
+
+		public String getS3Key() {
+			return s3Key;
+		}
+
+		public void setS3Key(String s3Key) {
+			this.s3Key = s3Key;
+		}
+
+		public String getS3Bucket() {
+			return s3Bucket;
+		}
+
+		public void setS3Bucket(String s3Bucket) {
+			this.s3Bucket = s3Bucket;
+		}
 	}
 }
