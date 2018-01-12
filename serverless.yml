@@ -1,4 +1,4 @@
-service: thumbnail
+service: ${opt:no}-thumbnail
 
 custom:
   src-bucket: stylez-sls-handson-rekognition
