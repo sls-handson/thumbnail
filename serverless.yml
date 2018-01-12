@@ -24,7 +24,6 @@ provider:
   timeout: 90
   profile: sls-handson
 
-
 # you can overwrite defaults here
 #  stage: dev
   region: us-east-1
@@ -36,7 +35,13 @@ provider:
         - "s3:ListBucket"
         - "s3:GetObject"
         - "s3:PutObject"
-      Resource: "*"
+      Resource: 
+         - 'Fn::Join':
+           - ':'
+           -
+             - 'arn:aws:s3:${self:provider.region}'
+             - Ref: 'AWS::AccountId'
+             - '*'
 #    - Effect: "Allow"
 #      Action:
 #        - "s3:PutObject"
