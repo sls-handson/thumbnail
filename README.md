@@ -54,14 +54,13 @@ api keys:
 endpoints:
   None
 functions:
-  thumbnail: thumbnail-dev-thumbnail
-Serverless: Removing old service versions...
+  put: thumbnail-dev-put
 
 $
 ```
 ## Invoke
 ```
-$sls invoke -f thumbnail -p event.json --no a001
+$sls invoke -f put -p event.json --no a001
 {
     "thumbnail": {
         "s3Key": "1_happy_face.jpg",

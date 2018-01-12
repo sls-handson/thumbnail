@@ -36,12 +36,12 @@ public class Function implements java.util.function.Function<Input, Output> {
 	}
 
 	@Override
-	public Output apply(final Input request) {
+	public Output apply(final Input input) {
 
-		System.out.println(request);
+		System.out.println(input);
 
-		final S3Object s3Object = s3.getObject(request.getS3Bucket(), request.getS3Key());
-		final Thumbnail thumbnail = new Thumbnail(properties.getS3BucketPrefix() + properties.getThumbnailBucket(), request.getS3Key());
+		final S3Object s3Object = s3.getObject(input.getS3Bucket(), input.getS3Key());
+		final Thumbnail thumbnail = new Thumbnail(properties.getThumbnailBucketPrefix() + properties.getThumbnailBucketBase() + properties.getThumbnailBucketSuffix(), input.getS3Key());
 
 		try {
 			final BufferedImage source = ImageIO.read(s3Object.getObjectContent());

@@ -1,9 +1,10 @@
 app:
     region: us-east-1
-    s3-bucket-prefix: "@no@-"
+    thumbnail-bucket-base: "stylez-sls-handson-rekognition"
+    thumbnail-bucket-prefix: "@no@-"
+    thumbnail-bucket-suffix: "-thumbnails"
     max-width: 250
     max-height: 250
-    thumbnail-bucket: "wildrydes-step-module-resources-thumbnails3bucket"
 
 #spring5 + spring-cloud-aws 2 ...   
 #cloud:
